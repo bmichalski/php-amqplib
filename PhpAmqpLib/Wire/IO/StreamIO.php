@@ -1,6 +1,7 @@
 <?php
 namespace PhpAmqpLib\Wire\IO;
 
+use PhpAmqpLib\Exception\AMQPHeartbeatException;
 use PhpAmqpLib\Exception\AMQPIOException;
 use PhpAmqpLib\Exception\AMQPRuntimeException;
 use PhpAmqpLib\Exception\AMQPTimeoutException;
@@ -348,7 +349,8 @@ class StreamIO extends AbstractIO
 
             // server has gone away
             if (($this->heartbeat * 2) < $t_read) {
-                $this->reconnect();
+                $this->close();
+                throw new AMQPHeartbeatException();
             }
 
             // time for client to send a heartbeat
